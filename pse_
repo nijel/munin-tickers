@@ -1,0 +1,42 @@
+#!/usr/bin/python3
+import os.path
+import sys
+from urllib.request import urlopen
+
+from bs4 import BeautifulSoup
+
+BASE = 'https://www.pse.cz/udaje-o-trhu/akcie/prehled/?ISIN={0}'
+
+ISIN = os.path.basename(sys.argv[0]).replace('pse_', '').upper()
+if not ISIN:
+    ISIN = 'CZ0005112300'
+
+# h2 is title
+# #c40366-module-container span.large-font')[1] is price
+
+try:
+    CMD = sys.argv[1]
+except IndexError:
+    CMD = 'fetch'
+
+with urlopen(BASE.format(ISIN)) as handle:
+    payload = handle.read()
+
+html = BeautifulSoup(payload, 'lxml')
+
+name = html.h2.text
+price = float(
+    html.find(id='c40366-module-container').find_all('span', attrs={'class': 'large-font'})[1].text.replace(',', '.')
+)
+
+if CMD == 'config':
+    print('host_name ticker')
+    print('graph_title PSE: {0}'.format(name))
+    print('graph_args --base 1000')
+    print('graph_scale no')
+    print('graph_category ticker')
+    print('graph_vlabel {0}'.format('CZK'))
+    print('{0}.label {1}'.format(ISIN.lower(), name))
+else:
+    print('{0}.value {1}'.format(ISIN.lower(), price))
+
