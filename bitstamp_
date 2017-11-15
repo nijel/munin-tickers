@@ -41,6 +41,7 @@ if CMD == 'config':
     print('{0}.label {1}/{2}'.format(TICKER.lower(), SOURCE, TARGET))
 else:
     with urlopen(BASE.format(TICKER.lower())) as handle:
-        data = json.load(handle)
+        payload = handle.read().decode('utf-8')
+        data = json.loads(payload)
         print('{0}.value {1}'.format(TICKER.lower(), data['last']))
 
