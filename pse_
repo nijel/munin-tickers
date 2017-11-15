@@ -5,6 +5,9 @@ from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 
+import codecs
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+
 BASE = 'https://www.pse.cz/udaje-o-trhu/akcie/prehled/?ISIN={0}'
 
 ISIN = os.path.basename(sys.argv[0]).replace('pse_', '').upper()
@@ -39,4 +42,3 @@ if CMD == 'config':
     print('{0}.label {1}'.format(ISIN.lower(), name))
 else:
     print('{0}.value {1}'.format(ISIN.lower(), price))
-
