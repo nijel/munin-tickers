@@ -26,7 +26,7 @@ html = BeautifulSoup(payload, 'lxml')
 
 name = html.h2.text
 price = float(
-    html.find(id='c40366-module-container').find_all('span', attrs={'class': 'large-font'})[1].text.replace(',', '.')
+    html.find(id='c40366-module-container').find_all('span', attrs={'class': 'large-font'})[1].text.replace(',', '.').replace('\xa0', '')
 )
 
 if CMD == 'config':
