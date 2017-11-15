@@ -1,0 +1,44 @@
+#!/usr/bin/python3
+import json
+import os.path
+import sys
+from urllib.request import urlopen
+
+BASE = 'https://www.bitstamp.net/api/v2/ticker/{0}/'
+
+TICKER = os.path.basename(sys.argv[0]).replace('bitstamp_', '').upper()
+
+NAMES = {
+    'BTC': 'Bitcoin',
+    'LTC': 'Litecoin',
+    'USD': 'USD',
+    'EUR': 'EUR',
+    'XRP': 'Ripple',
+    'ETH': 'Ethereum',
+}
+
+VSOURCE = SOURCE = TICKER[:3]
+VTARGET = TARGET = TICKER[3:]
+
+if SOURCE in NAMES:
+    VSOURCE = NAMES[SOURCE]
+if TARGET in NAMES:
+    VTARGET = NAMES[TARGET]
+
+try:
+    CMD = sys.argv[1]
+except IndexError:
+    CMD = 'fetch'
+
+if CMD == 'config':
+    print('host_name ticker')
+    print('graph_title {0} / {1}'.format(VSOURCE, VTARGET))
+    print('graph_args --base 1000')
+    print('graph_scale no')
+    print('graph_vlabel {0}'.format(TARGET))
+    print('{0}.label {1}/{2}'.format(TICKER.lower(), SOURCE, TARGET))
+else:
+    with urlopen(BASE.format(TICKER.lower())) as handle:
+        data = json.load(handle)
+        print('{0}.value {1}'.format(TICKER.lower(), data['last']))
+
