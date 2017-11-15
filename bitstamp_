@@ -7,6 +7,8 @@ from urllib.request import urlopen
 BASE = 'https://www.bitstamp.net/api/v2/ticker/{0}/'
 
 TICKER = os.path.basename(sys.argv[0]).replace('bitstamp_', '').upper()
+if not TICKER:
+    TICKER = 'BTCUSD'
 
 NAMES = {
     'BTC': 'Bitcoin',
