@@ -34,7 +34,7 @@ price = float(
 
 if CMD == 'config':
     print('host_name ticker')
-    print('graph_title PSE: {0}'.format(name))
+    print('graph_title Conseq: {0}'.format(name))
     print('graph_args --base 1000')
     print('graph_scale no')
     print('graph_category ticker')
