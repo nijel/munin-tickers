@@ -10,6 +10,9 @@ sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 BASE = 'http://www.ingbank.cz/ing-podilove-fondy/{0}/{1}/'
 
+BASE_1 = 'http://www.ingbank.cz/ing-podilove-fondy/nabidka-fondu/zakladni-nabidka-ing-podilovych-fondu-bez-poplatku/{0}/'
+BASE_2 = 'http://www.ingbank.cz/ing-podilove-fondy/kompletni-nabidka-ing-podilovych-fondu/{0}/'
+
 BASIC = {
     'ing-aria-lion-moderate',
     'ing-aria-lion-balanced',
@@ -22,9 +25,9 @@ if not NAME:
     NAME = 'ing-aria-lion-moderate'
 
 if NAME in BASIC:
-    GROUP = 'zakladni-nabidka-ing-podilovych-fondu-bez-poplatku'
+    BASE = BASE_1
 else:
-    GROUP = 'kompletni-nabidka-ing-podilovych-fondu'
+    BASE = BASE_2
 
 # h1 is title
 # #c40366-module-container span.large-font')[1] is price
@@ -34,7 +37,7 @@ try:
 except IndexError:
     CMD = 'fetch'
 
-with urlopen(BASE.format(GROUP, NAME)) as handle:
+with urlopen(BASE.format(NAME)) as handle:
     payload = handle.read()
 
 html = BeautifulSoup(payload, 'lxml')
