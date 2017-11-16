@@ -1,0 +1,44 @@
+#!/usr/bin/python3
+import os.path
+import sys
+from urllib.request import urlopen
+
+from bs4 import BeautifulSoup
+
+import codecs
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+
+BASE = 'https://www.conseq.cz/fund_detail.asp?fund={0}&type=invest'
+
+ID = os.path.basename(sys.argv[0]).replace('conseq_', '')
+if not ID:
+    ID = '255'
+
+# h2 is title
+# #c40366-module-container span.large-font')[1] is price
+
+try:
+    CMD = sys.argv[1]
+except IndexError:
+    CMD = 'fetch'
+
+with urlopen(BASE.format(ID)) as handle:
+    payload = handle.read()
+
+html = BeautifulSoup(payload, 'lxml')
+
+name = html.h2.text
+price = float(
+    html.find(id='headerTableFund').find_all('tr')[1].find_all('td')[0].find('strong').text.strip().split()[0].replace(',', '.')
+)
+
+if CMD == 'config':
+    print('host_name ticker')
+    print('graph_title PSE: {0}'.format(name))
+    print('graph_args --base 1000')
+    print('graph_scale no')
+    print('graph_category ticker')
+    print('graph_vlabel {0}'.format('CZK'))
+    print('{0}.label {1}'.format(ID.lower(), name))
+else:
+    print('{0}.value {1}'.format(ID.lower(), price))
