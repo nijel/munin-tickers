@@ -65,7 +65,7 @@ def get_ucb(currency):
     }).encode('utf-8')
     with urlopen(req, payload) as handle:
         content = handle.read()
-    data = json.loads(content)
+    data = json.loads(content.decode('utf-8'))
     for item in data:
         if item['CurrencyCode'] == currency:
             return item['CardsPurchaseRate'], item['CardsSaleRate']
