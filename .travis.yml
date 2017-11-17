@@ -14,4 +14,3 @@ script:
   - ./ing_
   - ./partners_
   - ./pse_
-  - ./LICENSE
