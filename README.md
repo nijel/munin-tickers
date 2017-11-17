@@ -1,5 +1,8 @@
 # munin-tickers
+
 Crypto, forex and stock tickers for munin
+
+[![Build Status](https://travis-ci.org/nijel/munin-tickers.svg?branch=master)](https://travis-ci.org/nijel/munin-tickers)
 
 This is really hacky set of plugins for [Munin](http://munin-monitoring.org/)
 to be able to monitor prices of various assets.
