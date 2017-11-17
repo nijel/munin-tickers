@@ -1,3 +1,4 @@
 pytz
+lxml
 beautifulsoup4
 python_forex_quotes
