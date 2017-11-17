@@ -4,6 +4,7 @@ import datetime
 import json
 import os.path
 import sys
+from urllib.parse import urlencode
 from urllib.request import urlopen, Request
 
 from bs4 import BeautifulSoup
@@ -17,6 +18,7 @@ FIO = 'https://www.fio.cz/'
 UCB = 'https://www.unicreditbank.cz/cwa/GetExchangeRates'
 KB = 'https://www.kb.cz/kurzovni-listek/cs/rl/index.x?format=xml'
 CSOB = 'https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt'
+CF = 'https://www.citfin.cz/cz/kalkulacky/devizova-kalkulacka.html'
 
 def get_cnb(currency):
     with urlopen(CNB) as handle:
@@ -87,6 +89,26 @@ def get_csob(currency):
         if parts[2] == currency:
             return float(parts[4].replace(',', '.')), float(parts[5].replace(',', '.'))
 
+def get_cf(currency):
+    def extract(params):
+        with urlopen(CF, urlencode(params).encode('utf-8')) as handle:
+            content = handle.read()
+        html = BeautifulSoup(content, 'lxml')
+        return float(
+            html.find(class_='result').find(class_='value').text.strip().rsplit(None, 1)[0].replace(',', '.').replace(' ', '')
+        ) / 1000
+
+    buy = {
+        'action': 'buy',
+        'money': '1000',
+        'currency_1': currency,
+        'currency_2': 'CZK',
+    }
+    sell = buy.copy()
+    sell['action'] = 'sell'
+    return extract(buy), extract(sell)
+
+
 
 NAME = os.path.basename(sys.argv[0]).replace('czk_', '').lower()
 if not NAME:
@@ -113,9 +135,12 @@ if CMD == 'config':
     print('kb_{}_prodej.label KB prodej'.format(NAME))
     print('csob_{}_nakup.label ČSOB nákup'.format(NAME))
     print('csob_{}_prodej.label ČSOB prodej'.format(NAME))
+    print('cf_{}_nakup.label Citfin nákup'.format(NAME))
+    print('cf_{}_prodej.label Citfin prodej'.format(NAME))
 else:
     print('cnb_{0}.value {1}'.format(NAME, get_cnb(NAME.upper())))
     print('fio_{0}_nakup.value {1}\nfio_{0}_prodej.value {2}'.format(NAME, *get_fio(NAME.upper())))
     print('ucb_{0}_nakup.value {1}\nucb_{0}_prodej.value {2}'.format(NAME, *get_ucb(NAME.upper())))
     print('kb_{0}_nakup.value {1}\nkb_{0}_prodej.value {2}'.format(NAME, *get_kb(NAME.upper())))
     print('csob_{0}_nakup.value {1}\ncsob_{0}_prodej.value {2}'.format(NAME, *get_csob(NAME.upper())))
+    print('cf_{0}_nakup.value {1}\ncf_{0}_prodej.value {2}'.format(NAME, *get_cf(NAME.upper())))

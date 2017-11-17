@@ -25,3 +25,4 @@ Curently supported sources:
     * [UniCredit Bank](https://www.unicreditbank.cz/)
     * [Komerční banka](https://www.kb.cz/)
     * [ČSOB](https://www.csob.cz/portal/)
+    * [Citfin](https://www.citfin.cz/)
