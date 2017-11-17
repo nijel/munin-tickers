@@ -1,0 +1,121 @@
+#!/usr/bin/python3
+import codecs
+import datetime
+import json
+import os.path
+import sys
+from urllib.request import urlopen, Request
+
+from bs4 import BeautifulSoup
+from lxml import objectify
+import pytz
+
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+
+CNB = 'http://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.txt'
+FIO = 'https://www.fio.cz/'
+UCB = 'https://www.unicreditbank.cz/cwa/GetExchangeRates'
+KB = 'https://www.kb.cz/kurzovni-listek/cs/rl/index.x?format=xml'
+CSOB = 'https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt'
+
+def get_cnb(currency):
+    with urlopen(CNB) as handle:
+        content = handle.read().decode('utf-8')
+    for line in content.splitlines():
+        if '|' not in line:
+            continue
+        parts = line.split('|')
+        if parts[4] == 'kurz':
+            continue
+        if parts[3] == currency:
+            return float(parts[4].replace(',', '.'))
+
+def get_fio(currency):
+    with urlopen(FIO) as handle:
+        content = handle.read()
+    html = BeautifulSoup(content, 'lxml')
+    for row in html.find(class_='barbox-listek').find('tbody').find_all('tr'):
+        match, buy, sell = row.find_all('td')
+        if match.text == currency:
+            return float(buy.text.replace(',', '.')), float(sell.text.replace(',', '.'))
+
+def get_ucb(currency):
+    req = Request(
+        UCB,
+        headers={
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+            'EntityCode': 'CZ',
+            'Language': 'CS',
+            'Product': 'PWS',
+            'Referer': 'https://www.unicreditbank.cz/cs/obcane/historical.html',
+            'SourceSystem': 'PWS',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) Gecko/20100101 Firefox/57.0',
+            'UserID': '',
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    )
+    date = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+    datestr = date.strftime('%Y%m%dT%H:%M:%S.000%z') 
+    payload = json.dumps({
+        'Currency': '*ALL',
+        'DateFrom': datestr,
+        'DateTo': datestr,
+        'multiplier': '0',
+    }).encode('utf-8')
+    with urlopen(req, payload) as handle:
+        content = handle.read()
+    data = json.loads(content)
+    for item in data:
+        if item['CurrencyCode'] == currency:
+            return item['CardsPurchaseRate'], item['CardsSaleRate']
+
+def get_kb(currency):
+    with urlopen(KB) as handle:
+        data = objectify.parse(handle)
+    for item in data.getroot().currency:
+        if item.name.text == currency:
+            return float(item.devBuyRate.text), float(item.devSaleRate.text)
+
+def get_csob(currency):
+    with urlopen(CSOB) as handle:
+        content = handle.read().decode('utf-8')
+    for line in content.splitlines():
+        if ';' not in line:
+            continue
+        parts = line.split(';')
+        if parts[2] == currency:
+            return float(parts[4].replace(',', '.')), float(parts[5].replace(',', '.'))
+
+
+NAME = os.path.basename(sys.argv[0]).replace('czk_', '')
+if not NAME:
+    NAME = 'eur'
+
+try:
+    CMD = sys.argv[1]
+except IndexError:
+    CMD = 'fetch'
+
+if CMD == 'config':
+    print('host_name ticker')
+    print('graph_title CZK kurzy')
+    print('graph_args --base 1000')
+    print('graph_scale no')
+    print('graph_category ticker')
+    print('graph_vlabel {0}'.format('CZK'))
+    print('cnb.label ČNB')
+    print('fio-nakup.label Fio nákup')
+    print('fio-prodej.label Fio prodej')
+    print('ucb-nakup.label UniCredit nákup')
+    print('ucb-prodej.label UniCredit prodej')
+    print('kb-nakup.label Komerční Banka nákup')
+    print('kb-prodej.label Komerční Banka prodej')
+    print('csob-nakup.label ČSOB nákup')
+    print('csob-prodej.label ČSOB prodej')
+else:
+    print('cnb.value {0}'.format(get_cnb(NAME.upper())))
+    print('fio_nakup.value {0}\nfio_prodej.value {1}'.format(*get_fio(NAME.upper())))
+    print('ucb_nakup.value {0}\nucb_prodej.value {1}'.format(*get_ucb(NAME.upper())))
+    print('kb_nakup.value {0}\nkb_prodej.value {1}'.format(*get_kb(NAME.upper())))
+    print('csob_nakup.value {0}\ncsob_prodej.value {1}'.format(*get_csob(NAME.upper())))
