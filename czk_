@@ -109,8 +109,8 @@ if CMD == 'config':
     print('fio-prodej.label Fio prodej')
     print('ucb-nakup.label UniCredit nákup')
     print('ucb-prodej.label UniCredit prodej')
-    print('kb-nakup.label Komerční Banka nákup')
-    print('kb-prodej.label Komerční Banka prodej')
+    print('kb-nakup.label KB nákup')
+    print('kb-prodej.label KB prodej')
     print('csob-nakup.label ČSOB nákup')
     print('csob-prodej.label ČSOB prodej')
 else:
