@@ -1,0 +1,13 @@
+sudo: disabled
+install: 
+  - pip3 install -r requirements.txt
+  - pip2 install -r requirements.txt
+script:
+  - ./bitstamp_
+  - ./conseq_
+  - ./czk_
+  - ./fx_
+  - ./ing_
+  - ./partners_
+  - ./pse_
+  - ./LICENSE
