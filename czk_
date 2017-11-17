@@ -99,7 +99,7 @@ except IndexError:
 
 if CMD == 'config':
     print('host_name ticker')
-    print('graph_title {0}/CZK kurzy'.format(NAME.upper()))
+    print('graph_title CZK: kurz {0}'.format(NAME.upper()))
     print('graph_args --base 1000')
     print('graph_scale no')
     print('graph_category ticker')
