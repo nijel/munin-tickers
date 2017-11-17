@@ -4,11 +4,20 @@ python:
   - "3.6"
 install: 
   - pip install -r requirements.txt
+  - pip install -r requirements-test.txt
 # The fx script is not tested as it needs API key
 script:
-  - ./bitstamp_
-  - ./conseq_
-  - ./czk_
-  - ./ing_
-  - ./partners_
-  - ./pse_
+  - coverage run --append ./bitstamp_ config
+  - coverage run --append ./conseq_ config
+  - coverage run --append ./czk_ config
+  - coverage run --append ./ing_ config
+  - coverage run --append ./partners_ config
+  - coverage run --append ./pse_ config
+  - coverage run --append ./bitstamp_ fetch
+  - coverage run --append ./conseq_ fetch
+  - coverage run --append ./czk_ fetch
+  - coverage run --append ./ing_ fetch
+  - coverage run --append ./partners_ fetch
+  - coverage run --append ./pse_ fetch
+after_script:
+  - codecov
