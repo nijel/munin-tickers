@@ -4,13 +4,11 @@ python:
   - "3.6"
 install: 
   - pip install -r requirements.txt
-  # fx_ is python2 only due to deps
-  - pip2 install --user -r requirements.txt
+# The fx script is not tested as it needs API key
 script:
   - ./bitstamp_
   - ./conseq_
   - ./czk_
-  - ./fx_
   - ./ing_
   - ./partners_
   - ./pse_
