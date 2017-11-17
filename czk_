@@ -88,7 +88,7 @@ def get_csob(currency):
             return float(parts[4].replace(',', '.')), float(parts[5].replace(',', '.'))
 
 
-NAME = os.path.basename(sys.argv[0]).replace('czk_', '')
+NAME = os.path.basename(sys.argv[0]).replace('czk_', '').lower()
 if not NAME:
     NAME = 'eur'
 
@@ -104,18 +104,18 @@ if CMD == 'config':
     print('graph_scale no')
     print('graph_category ticker')
     print('graph_vlabel CZK')
-    print('cnb.label ČNB')
-    print('fio-nakup.label Fio nákup')
-    print('fio-prodej.label Fio prodej')
-    print('ucb-nakup.label UniCredit nákup')
-    print('ucb-prodej.label UniCredit prodej')
-    print('kb-nakup.label KB nákup')
-    print('kb-prodej.label KB prodej')
-    print('csob-nakup.label ČSOB nákup')
-    print('csob-prodej.label ČSOB prodej')
+    print('cnb_{}.label ČNB'.format(NAME))
+    print('fio_{}_nakup.label Fio nákup'.format(NAME))
+    print('fio_{}_prodej.label Fio prodej'.format(NAME))
+    print('ucb_{}_nakup.label UniCredit nákup'.format(NAME))
+    print('ucb_{}_prodej.label UniCredit prodej'.format(NAME))
+    print('kb_{}_nakup.label KB nákup'.format(NAME))
+    print('kb_{}_prodej.label KB prodej'.format(NAME))
+    print('csob_{}_nakup.label ČSOB nákup'.format(NAME))
+    print('csob_{}_prodej.label ČSOB prodej'.format(NAME))
 else:
-    print('cnb.value {0}'.format(get_cnb(NAME.upper())))
-    print('fio_nakup.value {0}\nfio_prodej.value {1}'.format(*get_fio(NAME.upper())))
-    print('ucb_nakup.value {0}\nucb_prodej.value {1}'.format(*get_ucb(NAME.upper())))
-    print('kb_nakup.value {0}\nkb_prodej.value {1}'.format(*get_kb(NAME.upper())))
-    print('csob_nakup.value {0}\ncsob_prodej.value {1}'.format(*get_csob(NAME.upper())))
+    print('cnb_{0}.value {1}'.format(NAME, get_cnb(NAME.upper())))
+    print('fio_{0}_nakup.value {1}\nfio_{0}_prodej.value {2}'.format(NAME, *get_fio(NAME.upper())))
+    print('ucb_{0}_nakup.value {1}\nucb_{0}_prodej.value {2}'.format(NAME, *get_ucb(NAME.upper())))
+    print('kb_{0}_nakup.value {1}\nkb_{0}_prodej.value {2}'.format(NAME, *get_kb(NAME.upper())))
+    print('csob_{0}_nakup.value {1}\ncsob_{0}_prodej.value {2}'.format(NAME, *get_csob(NAME.upper())))
