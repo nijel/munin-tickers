@@ -8,8 +8,6 @@ from bs4 import BeautifulSoup
 import codecs
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
-BASE = 'http://www.ingbank.cz/ing-podilove-fondy/{0}/{1}/'
-
 BASE_1 = 'http://www.ingbank.cz/ing-podilove-fondy/nabidka-fondu/zakladni-nabidka-ing-podilovych-fondu-bez-poplatku/{0}/'
 BASE_2 = 'http://www.ingbank.cz/ing-podilove-fondy/kompletni-nabidka-ing-podilovych-fondu/{0}/'
 
