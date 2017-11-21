@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+import json
+import os.path
+import sys
+from urllib.request import urlopen
+
+BASE = 'http://data.gate.io/api2/1/ticker/{0}'
+
+TICKER = os.path.basename(sys.argv[0]).replace('gate_', '').upper()
+if not TICKER:
+    TICKER = 'btg_usdt'
+
+NAMES = {
+    'BTC': 'Bitcoin',
+    'BTG': 'Bitcoin Gold',
+    'LTC': 'Litecoin',
+    'USDT': 'USD',
+    'EUR': 'EUR',
+    'XRP': 'Ripple',
+    'ETH': 'Ethereum',
+}
+
+SOURCE, TARGET = TICKER.split('_')
+
+VSOURCE = SOURCE
+VTARGET = TARGET
+
+if SOURCE in NAMES:
+    VSOURCE = NAMES[SOURCE]
+if TARGET in NAMES:
+    VTARGET = NAMES[TARGET]
+
+try:
+    CMD = sys.argv[1]
+except IndexError:
+    CMD = 'fetch'
+
+if CMD == 'config':
+    print('host_name ticker')
+    print('graph_title Gate.io: {0} / {1}'.format(VSOURCE, VTARGET))
+    print('graph_args --base 1000')
+    print('graph_scale no')
+    print('graph_category ticker')
+    print('graph_vlabel {0}'.format(TARGET))
+    print('{0}.label {1}/{2}'.format(TICKER.lower(), SOURCE, TARGET))
+else:
+    with urlopen(BASE.format(TICKER.lower())) as handle:
+        payload = handle.read().decode('utf-8')
+        data = json.loads(payload)
+        print('{0}.value {1}'.format(TICKER.lower(), data['last']))
