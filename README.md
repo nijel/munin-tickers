@@ -15,6 +15,7 @@ Curently supported sources:
 
 * [Bitstamp](https://www.bitstamp.net/)
 * [Gate.io](https://gate.io/)
+* [Bitfinex](https://www.bitfinex.com/)
 * [Conseq](https://www.conseq.cz/)
 * [1Forge](https://1forge.com/)
 * [ING Bank](http://www.ingbank.cz/)
