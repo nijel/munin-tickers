@@ -141,6 +141,6 @@ else:
     print('cnb_{0}.value {1}'.format(NAME, get_cnb(NAME.upper())))
     print('fio_{0}_nakup.value {1}\nfio_{0}_prodej.value {2}'.format(NAME, *get_fio(NAME.upper())))
     print('ucb_{0}_nakup.value {1}\nucb_{0}_prodej.value {2}'.format(NAME, *get_ucb(NAME.upper())))
-    print('kb_{0}_nakup.value {1}\nkb_{0}_prodej.value {2}'.format(NAME, *get_kb(NAME.upper())))
+    # print('kb_{0}_nakup.value {1}\nkb_{0}_prodej.value {2}'.format(NAME, *get_kb(NAME.upper())))
     print('csob_{0}_nakup.value {1}\ncsob_{0}_prodej.value {2}'.format(NAME, *get_csob(NAME.upper())))
     print('cf_{0}_nakup.value {1}\ncf_{0}_prodej.value {2}'.format(NAME, *get_cf(NAME.upper())))
