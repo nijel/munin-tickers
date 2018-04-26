@@ -10,6 +10,7 @@ sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 BASE_1 = 'http://www.ingbank.cz/ing-podilove-fondy/nabidka-fondu/zakladni-nabidka-ing-podilovych-fondu-bez-poplatku/{0}/'
 BASE_2 = 'http://www.ingbank.cz/ing-podilove-fondy/kompletni-nabidka-ing-podilovych-fondu/{0}/'
+BASE_3 = 'http://www.ingbank.cz/ing-podilove-fondy/rozsirena-nabidka-podilovych-fondu/{0}.html'
 
 BASIC = {
     'ing-aria-lion-moderate',
@@ -18,12 +19,19 @@ BASIC = {
     'ing-aria-lion-aggresive',
 }
 
+EXTENDED = {
+    'franklin-global-convertible-securities',
+    'fidelity-japan-advantage',
+}
+
 NAME = os.path.basename(sys.argv[0]).replace('ing_', '')
 if not NAME:
     NAME = 'ing-aria-lion-moderate'
 
 if NAME in BASIC:
     BASE = BASE_1
+elif NAME in EXTENDED:
+    BASE = BASE_3
 else:
     BASE = BASE_2
 
