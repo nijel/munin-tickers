@@ -49,9 +49,9 @@ with urlopen(BASE.format(NAME)) as handle:
 html = BeautifulSoup(payload, 'lxml')
 
 name = html.h1.text
-price = float(
-    html.find('table').find_all('tr')[1].td.text.strip().split()[0].replace(',', '.')
-)
+price_text = html.find('table').find_all('tr')[1].td.text.strip().split()
+price = float(price_text[0].replace(',', '.'))
+currency = price_text[1]
 
 if CMD == 'config':
     print('host_name ticker')
@@ -59,7 +59,7 @@ if CMD == 'config':
     print('graph_args --base 1000')
     print('graph_scale no')
     print('graph_category ticker')
-    print('graph_vlabel {0}'.format('CZK'))
+    print('graph_vlabel {0}'.format(currency))
     print('{0}.label {1}'.format(NAME.lower(), name))
 else:
     print('{0}.value {1}'.format(NAME.lower(), price))
