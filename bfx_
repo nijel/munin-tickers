@@ -20,6 +20,8 @@ NAMES = {
     'EUR': 'EUR',
     'XRP': 'Ripple',
     'ETH': 'Ethereum',
+    'DSH': 'Dash',
+    'ZEC': 'Zcash',
 }
 
 VSOURCE = SOURCE = TICKER[:3]
