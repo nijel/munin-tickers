@@ -18,7 +18,7 @@ FIO = 'https://www.fio.cz/'
 UCB = 'https://www.unicreditbank.cz/cwa/GetExchangeRates'
 KB = 'https://www.kb.cz/kurzovni-listek/cs/rl/index.x?format=xml'
 CSOB = 'https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt'
-CF = 'https://www.citfin.cz/cz/kalkulacky/devizova-kalkulacka.html'
+CF = 'https://www.citfin.cz/'
 
 def get_cnb(currency):
     with urlopen(CNB) as handle:
@@ -90,23 +90,23 @@ def get_csob(currency):
             return float(parts[4].replace(',', '.')), float(parts[5].replace(',', '.'))
 
 def get_cf(currency):
-    def extract(params):
-        with urlopen(CF, urlencode(params).encode('utf-8')) as handle:
-            content = handle.read()
-        html = BeautifulSoup(content, 'lxml')
-        return float(
-            html.find(class_='result').find(class_='value').text.strip().rsplit(None, 1)[0].replace(',', '.').replace(' ', '')
-        ) / 1000
+    def extract(line):
+        return float(line.split('=')[1].strip().strip(';'))
 
-    buy = {
-        'action': 'buy',
-        'money': '1000',
-        'currency_1': currency,
-        'currency_2': 'CZK',
-    }
-    sell = buy.copy()
-    sell['action'] = 'sell'
-    return extract(buy), extract(sell)
+    with urlopen(CF) as handle:
+        content = handle.read().decode('utf-8')
+
+    for line in content.splitlines():
+        if 'calcRates' not in line:
+            continue
+        if '"{}"'.format(currency) not in line:
+            continue
+        if "buyRate" in line:
+            buy = extract(line)
+        elif "saleRate" in line:
+            sell = extract(line)
+
+    return buy, sell
 
 
 
