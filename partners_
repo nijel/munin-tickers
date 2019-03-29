@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import codecs
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
-BASE = 'http://www.partnersis.cz/podilove-fondy/{0}/'
+BASE = 'https://www.partnersis.cz/nase-fondy/{0}'
 
 NAME = os.path.basename(sys.argv[0]).replace('partners_', '')
 if not NAME:
@@ -29,7 +29,7 @@ html = BeautifulSoup(payload, 'lxml')
 
 name = html.h1.text
 price = float(
-    html.find('h3').text.split(':')[1].strip().split()[0].replace(',', '.')
+    html.find(class_='fond-graph-actual-price').find_all('strong')[0].text.replace(',', '.').split()[0]
 )
 
 if CMD == 'config':
