@@ -77,10 +77,13 @@ def get_kb(currency):
     with urlopen(KB) as handle:
         content = handle.read()
     html = BeautifulSoup(content, "lxml")
-    for row in html.find_all(class_='link--no-decoration'):
-        if row.find(class_='exchange-table__currency-code').text == currency:
-            rates = row.find_all(class_='exchange-table__value')[2]
-            return [float(x.text.strip().replace(',', '.')) for x in rates.find_all(class_='justify-content-center')]
+    for row in html.find_all(class_="link--no-decoration"):
+        if row.find(class_="exchange-table__currency-code").text == currency:
+            rates = row.find_all(class_="exchange-table__value")[2]
+            return [
+                float(x.text.strip().replace(",", "."))
+                for x in rates.find_all(class_="justify-content-center")
+            ]
 
 
 def get_csob(currency):
@@ -153,7 +156,11 @@ else:
             NAME, *get_ucb(NAME.upper())
         )
     )
-    print('kb_{0}_nakup.value {1}\nkb_{0}_prodej.value {2}'.format(NAME, *get_kb(NAME.upper())))
+    print(
+        "kb_{0}_nakup.value {1}\nkb_{0}_prodej.value {2}".format(
+            NAME, *get_kb(NAME.upper())
+        )
+    )
     print(
         "csob_{0}_nakup.value {1}\ncsob_{0}_prodej.value {2}".format(
             NAME, *get_csob(NAME.upper())
