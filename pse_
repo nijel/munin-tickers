@@ -6,36 +6,40 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 import codecs
+
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
-BASE = 'https://www.pse.cz/detail/{}'
+BASE = "https://www.pse.cz/detail/{}"
 
-ISIN = os.path.basename(sys.argv[0]).replace('pse_', '').upper()
+ISIN = os.path.basename(sys.argv[0]).replace("pse_", "").upper()
 if not ISIN:
-    ISIN = 'CZ0005112300'
+    ISIN = "CZ0005112300"
 
 try:
     CMD = sys.argv[1]
 except IndexError:
-    CMD = 'fetch'
+    CMD = "fetch"
 
 with urlopen(BASE.format(ISIN)) as handle:
     payload = handle.read()
 
-html = BeautifulSoup(payload, 'lxml')
+html = BeautifulSoup(payload, "lxml")
 
-name = html.find(attrs={'class': 'js-detail-name'}).text
+name = html.find(attrs={"class": "js-detail-name"}).text
 price = float(
-    html.find_all(attrs={'class': 'detail-chart-info-item-content-value'})[1].text.strip().replace(',', '.').split('\xa0')[0]
+    html.find_all(attrs={"class": "detail-chart-info-item-content-value"})[1]
+    .text.strip()
+    .replace(",", ".")
+    .split("\xa0")[0]
 )
 
-if CMD == 'config':
-    print('host_name ticker')
-    print('graph_title PSE: {0}'.format(name))
-    print('graph_args --base 1000')
-    print('graph_scale no')
-    print('graph_category ticker')
-    print('graph_vlabel {0}'.format('CZK'))
-    print('{0}.label {1}'.format(ISIN.lower(), name))
+if CMD == "config":
+    print("host_name ticker")
+    print("graph_title PSE: {0}".format(name))
+    print("graph_args --base 1000")
+    print("graph_scale no")
+    print("graph_category ticker")
+    print("graph_vlabel {0}".format("CZK"))
+    print("{0}.label {1}".format(ISIN.lower(), name))
 else:
-    print('{0}.value {1}'.format(ISIN.lower(), price))
+    print("{0}.value {1}".format(ISIN.lower(), price))

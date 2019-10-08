@@ -13,64 +13,65 @@ import pytz
 
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
-CNB = 'http://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.txt'
-FIO = 'https://www.fio.cz/'
-UCB = 'https://www.unicreditbank.cz/cwa/GetExchangeRates'
-KB = 'https://www.kb.cz/kurzovni-listek/cs/rl/index.x?format=xml'
-CSOB = 'https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt'
-CF = 'https://www.citfin.cz/'
+CNB = "http://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.txt"
+FIO = "https://www.fio.cz/"
+UCB = "https://www.unicreditbank.cz/cwa/GetExchangeRates"
+KB = "https://www.kb.cz/kurzovni-listek/cs/rl/index.x?format=xml"
+CSOB = "https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt"
+CF = "https://www.citfin.cz/"
+
 
 def get_cnb(currency):
     with urlopen(CNB) as handle:
-        content = handle.read().decode('utf-8')
+        content = handle.read().decode("utf-8")
     for line in content.splitlines():
-        if '|' not in line:
+        if "|" not in line:
             continue
-        parts = line.split('|')
-        if parts[4] == 'kurz':
+        parts = line.split("|")
+        if parts[4] == "kurz":
             continue
         if parts[3] == currency:
-            return float(parts[4].replace(',', '.'))
+            return float(parts[4].replace(",", "."))
+
 
 def get_fio(currency):
     with urlopen(FIO) as handle:
         content = handle.read()
-    html = BeautifulSoup(content, 'lxml')
-    for row in html.find(class_='barbox-listek').find('tbody').find_all('tr'):
-        match, buy, sell = row.find_all('td')
+    html = BeautifulSoup(content, "lxml")
+    for row in html.find(class_="barbox-listek").find("tbody").find_all("tr"):
+        match, buy, sell = row.find_all("td")
         if match.text == currency:
-            return float(buy.text.replace(',', '.')), float(sell.text.replace(',', '.'))
+            return float(buy.text.replace(",", ".")), float(sell.text.replace(",", "."))
+
 
 def get_ucb(currency):
     req = Request(
         UCB,
         headers={
-            'Accept': '*/*',
-            'Content-Type': 'application/json',
-            'EntityCode': 'CZ',
-            'Language': 'CS',
-            'Product': 'PWS',
-            'Referer': 'https://www.unicreditbank.cz/cs/obcane/historical.html',
-            'SourceSystem': 'PWS',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) Gecko/20100101 Firefox/57.0',
-            'UserID': '',
-            'X-Requested-With': 'XMLHttpRequest',
-        }
+            "Accept": "*/*",
+            "Content-Type": "application/json",
+            "EntityCode": "CZ",
+            "Language": "CS",
+            "Product": "PWS",
+            "Referer": "https://www.unicreditbank.cz/cs/obcane/historical.html",
+            "SourceSystem": "PWS",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) Gecko/20100101 Firefox/57.0",
+            "UserID": "",
+            "X-Requested-With": "XMLHttpRequest",
+        },
     )
     date = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
-    datestr = date.strftime('%Y%m%dT%H:%M:%S.000%z') 
-    payload = json.dumps({
-        'Currency': '*ALL',
-        'DateFrom': datestr,
-        'DateTo': datestr,
-        'multiplier': '0',
-    }).encode('utf-8')
+    datestr = date.strftime("%Y%m%dT%H:%M:%S.000%z")
+    payload = json.dumps(
+        {"Currency": "*ALL", "DateFrom": datestr, "DateTo": datestr, "multiplier": "0"}
+    ).encode("utf-8")
     with urlopen(req, payload) as handle:
         content = handle.read()
-    data = json.loads(content.decode('utf-8'))
+    data = json.loads(content.decode("utf-8"))
     for item in data:
-        if item['CurrencyCode'] == currency:
-            return item['CardsPurchaseRate'], item['CardsSaleRate']
+        if item["CurrencyCode"] == currency:
+            return item["CardsPurchaseRate"], item["CardsSaleRate"]
+
 
 def get_kb(currency):
     with urlopen(KB) as handle:
@@ -79,25 +80,27 @@ def get_kb(currency):
         if item.name.text == currency:
             return float(item.devBuyRate.text), float(item.devSaleRate.text)
 
+
 def get_csob(currency):
     with urlopen(CSOB) as handle:
-        content = handle.read().decode('utf-8')
+        content = handle.read().decode("utf-8")
     for line in content.splitlines():
-        if ';' not in line:
+        if ";" not in line:
             continue
-        parts = line.split(';')
+        parts = line.split(";")
         if parts[2] == currency:
-            return float(parts[4].replace(',', '.')), float(parts[5].replace(',', '.'))
+            return float(parts[4].replace(",", ".")), float(parts[5].replace(",", "."))
+
 
 def get_cf(currency):
     def extract(line):
-        return float(line.split('=')[1].strip().strip(';'))
+        return float(line.split("=")[1].strip().strip(";"))
 
     with urlopen(CF) as handle:
-        content = handle.read().decode('utf-8')
+        content = handle.read().decode("utf-8")
 
     for line in content.splitlines():
-        if 'calcRates' not in line:
+        if "calcRates" not in line:
             continue
         if '"{}"'.format(currency) not in line:
             continue
@@ -109,38 +112,53 @@ def get_cf(currency):
     return buy, sell
 
 
-
-NAME = os.path.basename(sys.argv[0]).replace('czk_', '').lower()
+NAME = os.path.basename(sys.argv[0]).replace("czk_", "").lower()
 if not NAME:
-    NAME = 'eur'
+    NAME = "eur"
 
 try:
     CMD = sys.argv[1]
 except IndexError:
-    CMD = 'fetch'
+    CMD = "fetch"
 
-if CMD == 'config':
-    print('host_name ticker')
-    print('graph_title CZK: kurz {0}'.format(NAME.upper()))
-    print('graph_args --base 1000')
-    print('graph_scale no')
-    print('graph_category ticker')
-    print('graph_vlabel CZK')
-    print('cnb_{}.label ČNB'.format(NAME))
-    print('fio_{}_nakup.label Fio nákup'.format(NAME))
-    print('fio_{}_prodej.label Fio prodej'.format(NAME))
-    print('ucb_{}_nakup.label UniCredit nákup'.format(NAME))
-    print('ucb_{}_prodej.label UniCredit prodej'.format(NAME))
-    print('kb_{}_nakup.label KB nákup'.format(NAME))
-    print('kb_{}_prodej.label KB prodej'.format(NAME))
-    print('csob_{}_nakup.label ČSOB nákup'.format(NAME))
-    print('csob_{}_prodej.label ČSOB prodej'.format(NAME))
-    print('cf_{}_nakup.label Citfin nákup'.format(NAME))
-    print('cf_{}_prodej.label Citfin prodej'.format(NAME))
+if CMD == "config":
+    print("host_name ticker")
+    print("graph_title CZK: kurz {0}".format(NAME.upper()))
+    print("graph_args --base 1000")
+    print("graph_scale no")
+    print("graph_category ticker")
+    print("graph_vlabel CZK")
+    print("cnb_{}.label ČNB".format(NAME))
+    print("fio_{}_nakup.label Fio nákup".format(NAME))
+    print("fio_{}_prodej.label Fio prodej".format(NAME))
+    print("ucb_{}_nakup.label UniCredit nákup".format(NAME))
+    print("ucb_{}_prodej.label UniCredit prodej".format(NAME))
+    print("kb_{}_nakup.label KB nákup".format(NAME))
+    print("kb_{}_prodej.label KB prodej".format(NAME))
+    print("csob_{}_nakup.label ČSOB nákup".format(NAME))
+    print("csob_{}_prodej.label ČSOB prodej".format(NAME))
+    print("cf_{}_nakup.label Citfin nákup".format(NAME))
+    print("cf_{}_prodej.label Citfin prodej".format(NAME))
 else:
-    print('cnb_{0}.value {1}'.format(NAME, get_cnb(NAME.upper())))
-    print('fio_{0}_nakup.value {1}\nfio_{0}_prodej.value {2}'.format(NAME, *get_fio(NAME.upper())))
-    print('ucb_{0}_nakup.value {1}\nucb_{0}_prodej.value {2}'.format(NAME, *get_ucb(NAME.upper())))
+    print("cnb_{0}.value {1}".format(NAME, get_cnb(NAME.upper())))
+    print(
+        "fio_{0}_nakup.value {1}\nfio_{0}_prodej.value {2}".format(
+            NAME, *get_fio(NAME.upper())
+        )
+    )
+    print(
+        "ucb_{0}_nakup.value {1}\nucb_{0}_prodej.value {2}".format(
+            NAME, *get_ucb(NAME.upper())
+        )
+    )
     # print('kb_{0}_nakup.value {1}\nkb_{0}_prodej.value {2}'.format(NAME, *get_kb(NAME.upper())))
-    print('csob_{0}_nakup.value {1}\ncsob_{0}_prodej.value {2}'.format(NAME, *get_csob(NAME.upper())))
-    print('cf_{0}_nakup.value {1}\ncf_{0}_prodej.value {2}'.format(NAME, *get_cf(NAME.upper())))
+    print(
+        "csob_{0}_nakup.value {1}\ncsob_{0}_prodej.value {2}".format(
+            NAME, *get_csob(NAME.upper())
+        )
+    )
+    print(
+        "cf_{0}_nakup.value {1}\ncf_{0}_prodej.value {2}".format(
+            NAME, *get_cf(NAME.upper())
+        )
+    )

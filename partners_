@@ -6,13 +6,14 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 import codecs
+
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
-BASE = 'https://www.partnersis.cz/nase-fondy/{0}'
+BASE = "https://www.partnersis.cz/nase-fondy/{0}"
 
-NAME = os.path.basename(sys.argv[0]).replace('partners_', '')
+NAME = os.path.basename(sys.argv[0]).replace("partners_", "")
 if not NAME:
-    NAME = 'partners-universe-13'
+    NAME = "partners-universe-13"
 
 # h1 is title
 # #c40366-module-container span.large-font')[1] is price
@@ -20,25 +21,28 @@ if not NAME:
 try:
     CMD = sys.argv[1]
 except IndexError:
-    CMD = 'fetch'
+    CMD = "fetch"
 
 with urlopen(BASE.format(NAME)) as handle:
     payload = handle.read()
 
-html = BeautifulSoup(payload, 'lxml')
+html = BeautifulSoup(payload, "lxml")
 
 name = html.h1.text
 price = float(
-    html.find(class_='fond-graph-actual-price').find_all('strong')[0].text.replace(',', '.').split()[0]
+    html.find(class_="fond-graph-actual-price")
+    .find_all("strong")[0]
+    .text.replace(",", ".")
+    .split()[0]
 )
 
-if CMD == 'config':
-    print('host_name ticker')
-    print('graph_title Partners: {0}'.format(name))
-    print('graph_args --base 1000')
-    print('graph_scale no')
-    print('graph_category ticker')
-    print('graph_vlabel {0}'.format('CZK'))
-    print('{0}.label {1}'.format(NAME.lower(), name))
+if CMD == "config":
+    print("host_name ticker")
+    print("graph_title Partners: {0}".format(name))
+    print("graph_args --base 1000")
+    print("graph_scale no")
+    print("graph_category ticker")
+    print("graph_vlabel {0}".format("CZK"))
+    print("{0}.label {1}".format(NAME.lower(), name))
 else:
-    print('{0}.value {1}'.format(NAME.lower(), price))
+    print("{0}.value {1}".format(NAME.lower(), price))

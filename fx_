@@ -4,30 +4,30 @@ import sys
 import python_forex_quotes
 
 
-TICKER = os.path.basename(sys.argv[0]).replace('fx_', '').upper()
+TICKER = os.path.basename(sys.argv[0]).replace("fx_", "").upper()
 if not TICKER:
-    TICKER = 'EURUSD'
+    TICKER = "EURUSD"
 
 SOURCE = TICKER[:3]
 TARGET = TICKER[3:]
 
-KEY = os.environ.get('API_KEY', '')
+KEY = os.environ.get("API_KEY", "")
 
 try:
     CMD = sys.argv[1]
 except IndexError:
-    CMD = 'fetch'
+    CMD = "fetch"
 
 
-if CMD == 'config':
-    print('host_name ticker')
-    print('graph_title XE: {0} / {1}'.format(SOURCE, TARGET))
-    print('graph_args --base 1000')
-    print('graph_scale no')
-    print('graph_category ticker')
-    print('graph_vlabel {0}'.format(TARGET))
-    print('{0}.label {1}/{2}'.format(TICKER.lower(), SOURCE, TARGET))
+if CMD == "config":
+    print("host_name ticker")
+    print("graph_title XE: {0} / {1}".format(SOURCE, TARGET))
+    print("graph_args --base 1000")
+    print("graph_scale no")
+    print("graph_category ticker")
+    print("graph_vlabel {0}".format(TARGET))
+    print("{0}.label {1}/{2}".format(TICKER.lower(), SOURCE, TARGET))
 else:
     client = python_forex_quotes.ForexDataClient(KEY)
     data = client.getQuotes([TICKER])
-    print('{0}.value {1}'.format(TICKER.lower(), data[0]['price']))
+    print("{0}.value {1}".format(TICKER.lower(), data[0]["price"]))

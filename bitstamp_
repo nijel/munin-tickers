@@ -4,19 +4,19 @@ import os.path
 import sys
 from urllib.request import urlopen
 
-BASE = 'https://www.bitstamp.net/api/v2/ticker/{0}/'
+BASE = "https://www.bitstamp.net/api/v2/ticker/{0}/"
 
-TICKER = os.path.basename(sys.argv[0]).replace('bitstamp_', '').upper()
+TICKER = os.path.basename(sys.argv[0]).replace("bitstamp_", "").upper()
 if not TICKER:
-    TICKER = 'BTCUSD'
+    TICKER = "BTCUSD"
 
 NAMES = {
-    'BTC': 'Bitcoin',
-    'LTC': 'Litecoin',
-    'USD': 'USD',
-    'EUR': 'EUR',
-    'XRP': 'Ripple',
-    'ETH': 'Ethereum',
+    "BTC": "Bitcoin",
+    "LTC": "Litecoin",
+    "USD": "USD",
+    "EUR": "EUR",
+    "XRP": "Ripple",
+    "ETH": "Ethereum",
 }
 
 VSOURCE = SOURCE = TICKER[:3]
@@ -30,19 +30,18 @@ if TARGET in NAMES:
 try:
     CMD = sys.argv[1]
 except IndexError:
-    CMD = 'fetch'
+    CMD = "fetch"
 
-if CMD == 'config':
-    print('host_name ticker')
-    print('graph_title Bitstamp: {0} / {1}'.format(VSOURCE, VTARGET))
-    print('graph_args --base 1000')
-    print('graph_scale no')
-    print('graph_category ticker')
-    print('graph_vlabel {0}'.format(TARGET))
-    print('{0}.label {1}/{2}'.format(TICKER.lower(), SOURCE, TARGET))
+if CMD == "config":
+    print("host_name ticker")
+    print("graph_title Bitstamp: {0} / {1}".format(VSOURCE, VTARGET))
+    print("graph_args --base 1000")
+    print("graph_scale no")
+    print("graph_category ticker")
+    print("graph_vlabel {0}".format(TARGET))
+    print("{0}.label {1}/{2}".format(TICKER.lower(), SOURCE, TARGET))
 else:
     with urlopen(BASE.format(TICKER.lower())) as handle:
-        payload = handle.read().decode('utf-8')
+        payload = handle.read().decode("utf-8")
         data = json.loads(payload)
-        print('{0}.value {1}'.format(TICKER.lower(), data['last']))
-
+        print("{0}.value {1}".format(TICKER.lower(), data["last"]))
