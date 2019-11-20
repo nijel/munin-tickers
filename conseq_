@@ -9,33 +9,31 @@ import codecs
 
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
-BASE = "https://www.conseq.cz/fund_detail.asp?fund={0}&type=invest"
+BASE = "https://www.conseq.cz/investice/prehled-fondu/{}"
 
-ID = os.path.basename(sys.argv[0]).replace("conseq_", "")
-if not ID:
-    ID = "255"
-
-# h2 is title
-# #c40366-module-container span.large-font')[1] is price
+NAME = os.path.basename(sys.argv[0]).replace("conseq_", "")
+if not NAME:
+    NAME = "conseq-invest-akcie-nove-evropy-a"
 
 try:
     CMD = sys.argv[1]
 except IndexError:
     CMD = "fetch"
 
-with urlopen(BASE.format(ID)) as handle:
+with urlopen(BASE.format(NAME)) as handle:
     payload = handle.read()
 
 html = BeautifulSoup(payload, "lxml")
 
-name = html.h2.text
+name = html.h1.text
+info_sec = html.find(class_="section__info__in")
+isin = info_sec.find_all("dd")[0].text.strip()
 price = float(
-    html.find(id="headerTableFund")
-    .find_all("tr")[1]
-    .find_all("td")[0]
-    .find("strong")
+    info_sec
+    .find_all("dd")[2]
     .text.strip()
-    .split()[0]
+    .split(')')[1]
+    .split('\xa0')[0]
     .replace(",", ".")
 )
 
@@ -46,6 +44,6 @@ if CMD == "config":
     print("graph_scale no")
     print("graph_category ticker")
     print("graph_vlabel {0}".format("CZK"))
-    print("{0}.label {1}".format(ID.lower(), name))
+    print("{0}.label {1}".format(isin.lower(), name))
 else:
-    print("{0}.value {1}".format(ID.lower(), price))
+    print("{0}.value {1}".format(isin.lower(), price))
