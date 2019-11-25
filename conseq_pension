@@ -9,15 +9,13 @@ import codecs
 
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
-BASE = "https://www.conseq.cz/news_detail.asp?page=386&news={}"
-FUNDS = (
-    ("konz", 866, "Conseq povinný konzervativní fond"),
-    ("dl", 863, "Conseq dluhopisový účastnický fond"),
-    ("glak", 862, "Conseq globální akciový účastnický fond"),
-)
+URL = "https://www.conseq.cz/penze/prehled-ucastnickych-fondu"
+FUNDS = {
+     "Conseq povinný konzervativní fond": "konz",
+     "Conseq dluhopisový účastnický fond": "dl",
+     "Conseq globální akciový účastnický fond": "glak",
+}
 
-# h2 is title
-# #c40366-module-container span.large-font')[1] is price
 
 try:
     CMD = sys.argv[1]
@@ -31,24 +29,15 @@ if CMD == "config":
     print("graph_scale no")
     print("graph_category ticker")
     print("graph_vlabel {0}".format("CZK"))
-
-
-for short, num_id, name in FUNDS:
-    if CMD == "config":
+    for name, short in FUNDS.items():
         print("{0}.label {1}".format(short, name))
-    else:
-        with urlopen(BASE.format(num_id)) as handle:
-            payload = handle.read()
+else:
+    with urlopen(URL) as handle:
+        payload = handle.read()
 
-        html = BeautifulSoup(payload, "lxml")
-
-        price = float(
-            html.find_all("table")[0]
-            .find_all("tr")[2]
-            .find_all("td")[4]
-            .text.strip()
-            .split()[0]
-            .replace(",", ".")
-        )
-
-        print("{0}.value {1}".format(short, price))
+    html = BeautifulSoup(payload, "lxml")
+    for row in html.find_all("table")[1].find_all("tr", class_="js-fund-row"):
+        cells = row.find_all("td")
+        name = cells[0].text
+        price = cells[3].text.strip().split()[0].replace(",", ".")
+        print("{0}.value {1}".format(FUNDS[name], price))
