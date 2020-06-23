@@ -45,4 +45,8 @@ else:
         cells = row.find_all("td")
         name = cells[0].text
         price = cells[3].text.strip().split()[0].replace(",", ".")
-        print("{0}.value {1}".format(ALIASES[name], price))
+        if name in FUNDS:
+            key = FUNDS[name]
+        else:
+            key = ALIASES[name]
+        print("{0}.value {1}".format(key, price))
