@@ -41,12 +41,13 @@ else:
         payload = handle.read()
 
     html = BeautifulSoup(payload, "lxml")
-    for row in html.find_all("table")[1].find_all("tr", class_="js-fund-row"):
-        cells = row.find_all("td")
-        name = cells[0].text
-        price = cells[3].text.strip().split()[0].replace(",", ".")
-        if name in FUNDS:
-            key = FUNDS[name]
-        else:
-            key = ALIASES[name]
-        print("{0}.value {1}".format(key, price))
+    for table in html.find_all("table"):
+        for row in table.find_all("tr", class_="js-fund-row"):
+            cells = row.find_all("td")
+            name = cells[0].text
+            price = cells[3].text.strip().split()[0].replace(",", ".")
+            if name in FUNDS:
+                key = FUNDS[name]
+            else:
+                key = ALIASES[name]
+            print("{0}.value {1}".format(key, price))
