@@ -2,7 +2,7 @@
 import json
 import os.path
 import sys
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 BASE = "https://api.bitfinex.com/v2/ticker/t{0}"
 # /ticker/tBTCUSD
@@ -46,7 +46,14 @@ if CMD == "config":
     print("graph_vlabel {0}".format(TARGET))
     print("{0}.label {1}/{2}".format(TICKER.lower(), SOURCE, TARGET))
 else:
-    with urlopen(BASE.format(TICKER)) as handle:
+    request = Request(
+        BASE.format(TICKER),
+        data=None,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
+        },
+    )
+    with urlopen(request) as handle:
         payload = handle.read().decode("utf-8")
         data = json.loads(payload)
         print("{0}.value {1}".format(TICKER.lower(), data[6]))
