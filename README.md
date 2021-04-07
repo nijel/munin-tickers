@@ -19,7 +19,6 @@ Curently supported sources:
 * [Conseq](https://www.conseq.cz/)
 * [1Forge](https://1forge.com/)
 * [ING Bank](http://www.ingbank.cz/)
-* [Partners IS](http://www.partnersis.cz/)
 * [Prague Stock Exchange](https://www.pse.cz/)
 * CZK exchange rates from several banks:
     * [ČNB](http://www.cnb.cz/)

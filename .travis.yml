@@ -13,13 +13,11 @@ script:
   - coverage run --append ./conseq_ config
   - coverage run --append ./czk_ config
   - coverage run --append ./ing_ config
-  - coverage run --append ./partners_ config
   - coverage run --append ./pse_ config
   - coverage run --append ./bitstamp_
   - coverage run --append ./conseq_
   - coverage run --append ./czk_
   - coverage run --append ./ing_
-  - coverage run --append ./partners_
   - coverage run --append ./pse_
 after_script:
   - codecov
