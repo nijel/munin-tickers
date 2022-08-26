@@ -14,6 +14,7 @@ FUNDS = {
      "Conseq povinný konzervativní fond": "konz",
      "Conseq dluhopisový účastnický fond": "dl",
      "Conseq globální akciový účastnický fond": "glak",
+    'Conseq Target Bond 2035 účastnický fond': "t2035",
 }
 ALIASES = {
     "CpsGLAK": "glak",
