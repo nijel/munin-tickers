@@ -151,11 +151,11 @@ else:
             NAME, *get_fio(NAME.upper())
         )
     )
-    print(
-        "ucb_{0}_nakup.value {1}\nucb_{0}_prodej.value {2}".format(
-            NAME, *get_ucb(NAME.upper())
-        )
-    )
+#    print(
+#        "ucb_{0}_nakup.value {1}\nucb_{0}_prodej.value {2}".format(
+#            NAME, *get_ucb(NAME.upper())
+#        )
+#    )
     print(
         "kb_{0}_nakup.value {1}\nkb_{0}_prodej.value {2}".format(
             NAME, *get_kb(NAME.upper())
